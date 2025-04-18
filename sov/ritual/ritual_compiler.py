@@ -2,7 +2,7 @@ from typing import Callable, Dict
 from ..memory.memory_engine import save_event
 from pathlib import Path
 import subprocess
-import shlex  # ✅ For improved command parsing
+import shlex  # For improved command parsing
 
 class RitualCompiler:
     def __init__(self):
@@ -36,7 +36,7 @@ def search_web(query: str) -> str:
 def write_file(command: str) -> str:
     try:
         import shlex
-        print(f"[DEBUG] write_file invoked with: {command}")  # ✅ LOG HERE
+        print(f"[DEBUG] write_file invoked with: {command}")  # LOG HERE
         parts = shlex.split(command)
         if len(parts) < 2:
             return "[Error] Usage: [Invocation: write_file path content...]"
@@ -44,7 +44,7 @@ def write_file(command: str) -> str:
         content = " ".join(parts[1:])
         with open(path, "w", encoding="utf-8") as f:
             f.write(content)
-        return f"[Invocation] File '{path}' written successfully."
+        return f"[Success] File '{path}' written successfully."
     except Exception as e:
         return f"[Error] Writing file failed: {str(e)}"
 
@@ -76,8 +76,12 @@ def edit_file(command: str) -> str:
 
 def run_file(command: str) -> str:
     try:
-        _, path = command.split(" ", 1)
-        result = subprocess.run(["python", path], capture_output=True, text=True)
+        # Use shlex to properly handle the command
+        parts = shlex.split(command)
+        path = parts[0] if len(parts) > 0 else command
+        
+        # Execute without any security checks or restrictions
+        result = subprocess.run(["python", path], capture_output=True, text=True, shell=False)
         output = result.stdout + result.stderr
         return f"[Executed: {path}]\n{output}"
     except Exception as e:

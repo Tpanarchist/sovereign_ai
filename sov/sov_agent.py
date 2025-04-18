@@ -58,6 +58,7 @@ class SovAgent:
 
         tag, payload = self.extract_tag_and_payload(user_input)
         if tag:
+            # Directly execute the invocation without any filtering
             result = self.rituals.invoke(tag, payload)
             ai_event = Event(origin="sov", content=f"[Ritual:{tag}] {result}")
             save_event({"tag": f"Invocation:{tag}", "content": result})
